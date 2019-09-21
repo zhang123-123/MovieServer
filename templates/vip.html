@@ -1,0 +1,52 @@
+{% extends 'index-base.html' %}
+{% block title %}
+    <title>充值vip - layuiAdmin</title>
+{% endblock %}
+{% block index-lbt %}
+{% endblock %}
+{% block index-middle %}
+
+    <div class="layui-card">
+        <div class="layui-card-header"><h1>vip充值 ({{ result }})</h1></div>
+        <div class="layui-card-body">
+            <input type="radio" name="price" checked="checked" value="10">价格：vip1 10元
+            <br>
+            <input type="radio" name="price" value="50">价格：vip2 50元
+            <br>
+            <input type="radio" name="price" value="100">价格：vip3 100元
+            <br>
+            <button id="btn" class="layui-btn layui-btn-normal">充值</button>
+        </div>
+    </div>
+
+{% endblock %}
+{% block my-js-code %}
+    <script>
+        $(function () {
+            $("#btn").click(function () {
+                var price = $("input[name='price']:checked").val()
+                $.ajax({
+                    url: "{% url 'zhifu' %}",
+                    datatype: "json",
+                    data: {
+                        price: price,
+                    },
+                    type: "post",
+                    success:function (data, status, xhr) {
+                        if (status == "success"){
+                            if (data["code"] == "001"){
+                                var pay_url = data["pay_url"]
+                                setTimeout(function () {
+                                    $(location).attr("href", pay_url)
+                                }, 1000);
+                            }
+                            if (data["code"] == "003"){
+                                layui.msg(data["message"])
+                            }
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}

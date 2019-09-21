@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>上传手机号 - layuiAdmin</title>
+{% endblock %}
+{% block middle %}
+    <form method="post" onsubmit="return false">
+        {#    设置post请求随机字符串#}
+        {% csrf_token %}
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                       for="LAY-user-login-username"></label>
+                <input type="text" name="phone" id="LAY-user-login-username" lay-verify="required"
+                       placeholder="手机号"
+                       class="layui-input">
+                <div class="phone-wrong" hidden></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-row">
+                    <div class="layui-col-xs7">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-vercode"
+                               for="code"></label>
+                        <input type="text" name="code" id="code" lay-verify="required"
+                               placeholder="手机验证码" class="layui-input">
+                    </div>
+                    <div class="layui-col-xs5">
+                        <div style="margin-left: 10px;">
+                            <button type="button" class="layui-btn layui-btn-primary layui-btn-fluid"
+                                    id="get_code">获取手机验证码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-login-submit" id="btn">绑 定 手 机 号
+                </button>
+            </div>
+
+        </div>
+    </form>
+{% endblock %}
+{% block my-js-code %}
+    <script>
+        $(function () {
+            $("input[name='phone']").focus();
+            //focus() 设置焦点
+            //blur事件：文本框失去焦点时触发
+            $("input[name='phone']").blur(function () {
+                //判断邮箱格式
+                var phone = $(this).val();
+                var flag = false;
+                var message = "";
+                var myreg = /^1[3,5,8]\d{9}$/;
+                if (phone == '') {
+                    message = "邮箱不能为空！";
+                } else if (!myreg.test(phone)) {
+                    message = "请输入有效的邮箱地址！";
+                } else {
+                    flag = true;
+                }
+                if (!flag) {
+                    //错误提示
+                    $(".phone-wrong").text(message);
+                    $(".phone-wrong").removeAttr("hidden")
+                } else {
+                    //正确提示
+                    $(".phone-wrong").attr("hidden", "")
+                }
+            });
+            $("#get_code").click(function () {
+                $.ajax({
+                    url: "{% url 'sent_phone_code' %}",
+                    type: "post",
+                    data: $("form").serialize(),
+                    success:function (data, status, xhr) {
+                        if (status == "success"){
+                            if (data["code"] == "001") {
+                                layer.msg(data["message"])
+                                //禁用按钮
+                                $("#get_code").addClass("layui-btn-disabled");
+                                $("#get_code").attr("disabled", "");
+                                //
+                                var time = 60000;
+                                setTimeout(function () {
+                                    var x = setInterval(function () {
+                                        time = time - 1000; //reduce each second
+                                        $("#get_code").text((time / 1000) % 60 + "秒后重获");
+                                        //console.log("邮箱安全码(" + (time / 1000) % 60 + ")秒");
+                                        if (time == 0) {
+                                            clearInterval(x);
+                                            $("#get_code").removeClass("layui-btn-disabled");
+                                            $("#get_code").removeAttr("disabled");
+                                            $("#get_code").text("获取手机验证码");
+                                            obj.value = "retry";
+                                            obj.disabled = false;
+                                        }
+                                    }, 1000);
+                                }, 0);
+
+                                //alert(data["message"])
+                            } else {
+                                layer.msg(data["message"]);
+                                //alert(data["message"])
+                            }
+                        }else {
+                            layer.msg("请求异常")
+                        }
+                    }
+                })
+            })
+            $("#btn").click(function () {
+                $.ajax({
+                    url: "{% url 'up_phone' %}",
+                    type: "post",
+                    timeout: "3000",
+                    dataType: "json",
+                    data: $("form").serialize(),
+                    success:function (data, status, xhr) {
+                        if (status == "success"){
+                            if (data["code"] == "001") {
+                                layer.msg(data["message"]);
+                                setTimeout(function () {
+                                    $(location).attr("href", "{% url 'index' %}")
+                                }, 3000);
+                                //alert(data["message"])
+                            } else {
+                                layer.msg(data["message"]);
+                                //alert(data["message"])
+                            }
+                        }else {
+                            layer.msg("请求异常")
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}

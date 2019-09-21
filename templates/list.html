@@ -1,0 +1,131 @@
+{% extends 'index-base.html' %}
+{% load static %}
+{% block title %}
+    <title>电影列表- layuiAdmin</title>
+{% endblock %}
+{% block my-style %}
+    <style>
+        /* 这段样式只是用于演示 */
+        #LAY-component-grid-list .demo-list .layui-card {
+            height: 267px;
+        }
+    </style>
+{% endblock %}
+{% block index-lbt %}
+{% endblock %}
+{% block index-middle %}
+    <div class="layui-fluid layadmin-cmdlist-fluid">
+        <div class="layui-row layui-col-space30">
+            {% for movie in movies %}
+                <div class="layui-col-md3 layui-col-sm4">
+                    <div class="cmdlist-container">
+                        <a href="{% url 'movie_detail' %}?movie_id={{ movie.id }}">
+                            <img style="object-fit: cover; height: 560px;"
+                                 data-original="{% static '' %}{{ movie.movie_img }}">
+                        </a>
+                        <a href="{% url 'movie_detail' %}?movie_id={{ movie.id }}">
+                            <div class="cmdlist-text">
+                                <p class="info">{{ movie.movie_name }}</p>
+                                <div>
+                                    <span class="look"><i class="layui-icon layui-icon-username"></i>
+                                        <b>{{ movie.look }}查看</b></span>
+
+                                    <span class="mark"><i class="layui-icon layui-icon-rate"></i>
+                                    <b>{{ movie.mark }}收藏</b>
+                                        </span>
+
+                                    <span class="flow down">
+                                        <i class="layui-icon layui-icon-download-circle"></i>
+                      <b>{{ movie.down }}下载</b>
+                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="layui-col-md12 layui-col-sm12">
+                <div id="demo0"></div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block my-js-code %}
+
+    <script>
+        window.onload = function () {
+
+            {#getListData()  //请求数据#}
+            getPage()     //分页操作
+        }
+        {#var page_ = 1; //设置首页页码#}
+        var limit = 2;  //设置一页显示的条数
+        var total;    //总条数
+        function getListData(page) {
+            console.log(page, "11111");
+
+            $.ajax({
+                url: window.location.href,
+                data: {
+                    page: page,
+                },
+
+                success: function (data) {
+                    setTimeout(function () {
+                        var href_name = $(location).attr("href");
+                        console.log(href_name);
+                        var result = href_name.split("&");
+                        $(location).attr("href", result[0] + "&page=" + page)
+                    });
+                }
+            });
+        }
+
+        function getPage() {
+            layui.use(['laypage', 'layer'], function () {
+                var laypage = layui.laypage
+                    , layer = layui.layer;
+
+
+                //总页数大于页码总数
+                laypage.render({
+                    elem: 'demo0'
+                    , count: {{ all_page }}//数据总数
+                    , curr: {{ page }}
+                    , jump: function (obj, first) {
+                        if (!first) {
+                            //console.log(obj);
+                            layer.msg('第' + obj.curr + '页');
+                            {#page_ = obj.curr;#}
+                            getListData(obj.curr);
+
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+
+    <script>
+        $("img").lazyload({
+            placeholder: "{% static 'imgs/14e2a32a6d8ff12b83c5fa88bcc61cad.jpg' %}"
+        })
+    </script>
+
+    <script>
+        $(".look").click(function () {
+            event.preventDefault();
+            alert($(this).val() + "look")
+        });
+    $(".mark").click(function () {
+            event.preventDefault();
+            alert($(this).val() + "mark")
+        });
+    $(".down").click(function () {
+            event.preventDefault();
+            alert($(this).val()+ "down")
+        })
+    </script>
+{% endblock %}

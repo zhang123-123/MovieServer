@@ -1,0 +1,130 @@
+{% extends 'index-base.html' %}
+{% load static %}
+{% block title %}
+    <title>首页- layuiAdmin</title>
+{% endblock %}
+{% block index-middle %}
+    <div class="layui-fluid layadmin-cmdlist-fluid movie-body">
+
+    </div>
+{% endblock %}
+
+{% block my-js-code %}
+    <script>
+        layui.use('upload', function () {
+            var upload = layui.upload;
+
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#test1' //绑定元素
+                , url: '/upload/' //上传接口
+                , done: function (res) {
+                    //上传完毕回调
+                }
+                , error: function () {
+                    //请求异常回调
+                }
+            });
+        });
+        $(function () {
+            $(document).ready(function () {
+                var email = "{{ request.user.username }}";
+                //d
+                var reg = /^(\d{2})\d*((.*){5})$/;
+                var new_email = email.replace(reg, '$1****$2');
+                //console.log(email);
+                //console.log(new_email);
+                $("#email_re").text(new_email)
+            });
+            //window.onload = function () {
+            //var email = "{{ request.user.username }}";
+            //d
+            //var reg = /^(\d{2})\d*((.*){5})$/;
+            //var new_email = email.replace(reg, '$1****$2');
+            //console.log(email);
+            //console.log(new_email);
+            //$("#email_re").text(new_email)
+            //}
+
+        })
+    </script>
+    <script>
+        $(function () {
+
+            $.ajax({
+                url: {% url 'movie_index' %},
+                success: function (data, status, xhr) {
+                    console.log(data);
+                    if (status == "success") {
+                        //alert(data);
+                        if (data["code"] == "001") {
+                            var data = data["data"]
+                            $.each(data, function (key, value) {
+                                var cate_html = ' <fieldset class="layui-elem-field">\n' +
+                                    '            <legend><a href="{% url 'movie_list' %}?cate_name=' + key + '">' + key + '</a></legend>\n' +
+                                    '            <div class="layui-field-box">\n' +
+                                    '                <div class="layui-fluid layadmin-cmdlist-fluid">\n' +
+                                    '                    <div class="layui-row layui-col-space30">\n' +
+                                    '                        \n'
+
+                                console.log(key, value)
+                                $.each(value, function (index, val) {
+                                    console.log(val.img)
+                                    var movie_html = '<div class="layui-col-md3 layui-col-sm4">\n' +
+                                        '                            <div class="cmdlist-container">\n' +
+                                        '                                <a href="{% url 'movie_detail' %}?movie_id='+ val.id +'" >\n' +
+                                        '                                    <img style="object-fit: cover;height: 560px" data-original="{% static '' %}' + val.movie_img + '">\n' +
+                                        '                                </a>\n' +
+                                        '                                <a href="{% url 'movie_detail' %}?movie_id='+ val.id +'">\n' +
+                                        '                                    <div class="cmdlist-text">\n' +
+                                        '                                        <p class="info">' + val.movie_name + '</p>\n' +
+                                        '                                        <div class="price">\n' +
+                                        '                                            <i class="layui-icon layui-icon-username"></i><b>' + val.look + '查看</b>\n' +
+                                        '                                            <i class="layui-icon layui-icon-rate"></i><b>' + val.mark + '收藏</b>\n' +
+
+                                        '                                            <span class="flow">\n' +
+                                        '                      <i class="layui-icon layui-icon-download-circle"></i><b>\n' +
+                                        '                      ' + val.down + '下载</b>\n' +
+                                        '                    </span>\n' +
+                                        '                                        </div>\n' +
+                                        '                                    </div>\n' +
+                                        '                                </a>\n' +
+                                        '                            </div>\n' +
+                                        '                        </div>'
+                                    cate_html += movie_html
+                                    console.log(val.movie_name)
+                                })
+                                cate_html += '                    </div>\n' +
+                                    '                </div>\n' +
+                                    '            </div>\n' +
+                                    '        </fieldset>'
+                                $(".movie-body").append(cate_html)
+                                $("img").lazyload({
+                                    placeholder: "{% static 'imgs/14e2a32a6d8ff12b83c5fa88bcc61cad.jpg' %}"
+                                })
+                            })
+
+                        } else {
+                            layer.msg(data["message"]);
+
+                            //alert(data["message"])
+                        }
+                    } else {
+                        //console.log("请求异常")
+                        layer.msg("请求异常")
+                    }
+                }
+            })
+        });
+    </script>
+
+{% endblock %}
+
+
+{#event.preventDefault()  阻止标签的默认功能#}
+
+
+
+
+
+
