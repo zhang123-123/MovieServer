@@ -1,5 +1,0 @@
-# Created by .ignore support plugin (hsz.mobi)
-.idea
-settings.py
-db.sqlite3
-mysite/__pycache__/

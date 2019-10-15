@@ -56,6 +56,8 @@ class Movie(models.Model):
     mark = models.IntegerField(default=0, null=True, blank=True)
     # 下载量
     down = models.IntegerField(default=0, null=True, blank=True)
+    # 点赞量
+    like_num = models.IntegerField(default=0, null=True, blank=True)
 
 
 
@@ -74,11 +76,11 @@ class Comment(models.Model):
 
 
 class Huifu(models.Model):
-    user_id = models.IntegerField()
+    comment_user_id = models.IntegerField()
     movie_id = models.IntegerField()
-    movie_date = models.DateTimeField(auto_now_add=True)
-    user_huifu_content = models.CharField(max_length=50)
-    user_floor = models.IntegerField(default=1)
+    hf_date = models.DateTimeField(auto_now_add=True)
+    hf_content = models.TextField(default="")
+    comment_id = models.IntegerField(default=0)
     hf_user_id = models.IntegerField()
 
 class Pay(models.Model):
@@ -89,3 +91,5 @@ class Pay(models.Model):
     pay_price = models.FloatField(default=0)
     pay_status = models.IntegerField()
     # -1 支付失败  0 尚未支付  1 支付成功
+
+

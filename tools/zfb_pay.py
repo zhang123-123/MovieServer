@@ -21,7 +21,7 @@ class AliPay(object):
         self.subject = "vip充值"
         self.price = price
         self.NOTIFY_URL = None
-        self.RETURN_URL = "http://192.168.4.193:8000/recharge_vip/"
+        self.RETURN_URL = "http://127.0.0.1:8000/recharge_vip/"
         self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.ali = alipay.AliPay(
             appid=self.UID,

@@ -19,5 +19,5 @@ def check_psw_strong(password):
     else:
         return 4
 
-
-check_psw_strong("231313131.l")
+if __name__ == '__main__':
+    check_psw_strong("231313131.l")

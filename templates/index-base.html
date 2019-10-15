@@ -29,15 +29,15 @@
         #LAY-component-grid-list .demo-list .layui-card {
             height: 267px;
         }
-
+        {% block my-style %}
+        {% endblock %}
     </style>
 
     {% block my-link %}
     {% endblock %}
     {% block my-js %}
     {% endblock %}
-    {% block my-style %}
-    {% endblock %}
+
 </head>
 <body class="site-home" id="LAY_home" style="background-color: #eee;" data-date="9-10">
 {% block index-top %}
@@ -46,13 +46,96 @@
             <a class="logo" href="/">
                 <img src="{% static 'imgs/logo.png' %}" alt="layui">
             </a>
-            <div class="layui-form component" lay-filter="LAY-site-header-component"></div>
+            <!--<div class="ss">
+                <div class="layui-form component">
+                    <div class="layui-form-select layui-form-selected">
+                        <div class="layui-select-title"><input type="text" placeholder="搜索类别或电影名" value=""
+                                                               class="layui-input" id="sousuo" name="sousuo" width="200px"> </div>
+                        <dl class="layui-anim layui-anim-upbit" style="display:none;" id="dl-dd">
+                            <dd value="" class="layui-select-tips aa layui-this">搜索类别或电影名</dd>
+                            <dd value="欧美电影" class="aa">欧美电影</dd>
+                            <dd value="国内电影" class="aa">国内电影</dd>
+                            <dd value="最新影片" class="aa">最新影片</dd>
+                            <dd value="精品影片" class="aa">精品影片</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>-->
+            <!--<div class="layui-form component" lay-filter="component"></div>-->
+
             <ul class="layui-nav">
-                <li class="layui-nav-item ">
-                    <a href="/doc/">文档<!-- <span class="layui-badge-dot"></span> --></a>
+                <li class="layui-nav-item">
+                    <div class="layui-form component" style="margin-left: -265px;margin-top: -30px">
+                        <input type="text" placeholder="搜索电影名" value="" class="layui-input" id="sousuo" name="sousuo"
+                               style="width:200px"></div>
+                    <!--<dl class="layui-anim layui-anim-upbit" style="display:none;" id="dl-dd">
+                        <dd value="" class="layui-select-tips aa layui-this">搜索类别或电影名</dd>
+                        <dd value="欧美电影" class="aa">欧美电影</dd>
+                        <dd value="国内电影" class="aa">国内电影</dd>
+                        <dd value="最新影片" class="aa">最新影片</dd>
+                        <dd value="精品影片" class="aa">精品影片</dd>
+                    </dl>-->
+
                 </li>
-                <li class="layui-nav-item ">
-                    <a href="/demo/">示例<!-- <span class="layui-badge-dot"></span> --></a>
+                <li class="layui-nav-item layui-hide-xs">
+                    <a class="ss"><i class="layui-icon layui-icon-search"></i></a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><!--<span class="layui-badge-dot" style="margin: -5px 0 0 -15px;"></span>-->
+                        电影类别</a>
+                    <dl class="layui-nav-child">
+                        <dd lay-unselect>
+                            <a href="{% url 'movie_type_ss' %}?movie_cate=动作" target="_blank">动作</a>
+                        </dd>
+                        <dd lay-unselect>
+                            <a href="{% url 'movie_type_ss' %}?movie_cate=犯罪" target="_blank">犯罪</a>
+                        </dd>
+
+                        <dd class="layui-hide-sm layui-show-xs" lay-unselect>
+                            <a href="{% url 'movie_type_ss' %}?movie_cate=剧情" target="_blank">剧情</a>
+
+                        </dd>
+                        <dd lay-unselect><a href="{% url 'movie_type_ss' %}?movie_cate=惊悚" target="_blank">惊悚</a></dd>
+                        <dd lay-unselect><a href="{% url 'movie_type_ss' %}?movie_cate=喜剧" target="_blank">喜剧</a>
+
+                        </dd>
+
+                        <dd lay-unselect><a href="{% url 'movie_type_ss' %}?movie_cate=悬疑" target="_blank" lay-unselect>悬疑</a></dd>
+                        <dd lay-unselect><a href="{% url 'movie_type_ss' %}?movie_cate=爱情" target="_blank">爱情</a>
+                            <hr>
+                        </dd>
+                        <dd lay-unselect><a href="{% url 'movie_type_ss' %}?movie_cate=其他" target="_blank"
+                                            id="layui-spm-event-layuicdn" rel="nofollow">其他</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><!--<span class="layui-badge-dot" style="margin: -5px 0 0 -15px;"></span>-->
+                        周边</a>
+                    <dl class="layui-nav-child">
+                        <dd lay-unselect>
+                            <a href="//fly.layui.com/extend/" target="_blank">扩展组件</a>
+                        </dd>
+                        <dd lay-unselect>
+                            <a href="//fly.layui.com/store/" target="_blank">模板市场 <span class="layui-badge-dot"></span></a>
+                            <hr>
+                        </dd>
+
+                        <dd class="layui-hide-sm layui-show-xs" lay-unselect>
+                            <a href="//fly.layui.com/" target="_blank">社区交流</a>
+                            <hr>
+                        </dd>
+                        <dd lay-unselect><a href="/admin/" target="_blank">后台模板</a></dd>
+                        <dd lay-unselect><a href="/layim/" target="_blank">即时聊天</a>
+                            <hr>
+                        </dd>
+
+                        <dd lay-unselect><a href="/alone.html" target="_blank" lay-unselect>独立组件</a></dd>
+                        <dd lay-unselect><a href="https://fly.layui.com/jie/24209/" target="_blank">Axure 组件</a>
+                            <hr>
+                        </dd>
+                        <dd lay-unselect><a href="https://www.layuicdn.com/?from=layui" target="_blank"
+                                            id="layui-spm-event-layuicdn" rel="nofollow">layui cdn</a></dd>
+                    </dl>
                 </li>
 
 
@@ -110,7 +193,7 @@ style="margin: -5px 0 0 -15px;"></span>-->
                             <dd lay-unselect>
                                 <a href="{% url 'update_info' %}" target="_blank"><i
                                         class="layui-icon layui-icon-username" style="float: left"></i>&nbsp;&nbsp;<span
-                                        id="email_re">{{ request.user.username }}</span>
+                                        id="email_re" data-name="{{ request.user.username }}">{{ request.user.username }}</span>
                                 </a>
                             </dd>
                             <dd lay-unselect>
@@ -122,10 +205,11 @@ style="margin: -5px 0 0 -15px;"></span>-->
                                     <i class="layui-icon">&#xe67c;</i>&nbsp;&nbsp;上传头像</a>
                                 <hr>
                             </dd>
+
                             <dd lay-unselect>
                                 <a href="{% url 'recharge_vip' %}">
                                     充值<span class="layui-badge">vip {{ request.user.vip }}</span></a>
-{#                                <hr>#}
+                                {#                                <hr>#}
                             </dd>
                             <dd lay-unselect><a href="{% url 'update_pwd' %}" target="_blank"><i
                                     class="layui-icon layui-icon-password"></i>&nbsp;&nbsp;修改密码</a>
@@ -221,7 +305,7 @@ style="margin: -5px 0 0 -15px;"></span>-->
         </div>
     </div>
 {% endblock %}
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script async src=""></script>
 <div class="site-tree-mobile layui-hide">
     <i class="layui-icon">&#xe602;</i>
 </div>
@@ -239,6 +323,7 @@ style="margin: -5px 0 0 -15px;"></span>-->
         base: "{% static 'layui/' %}"
         ,
     }).use('global');
+
 </script>
 
 <script>
@@ -270,6 +355,49 @@ style="margin: -5px 0 0 -15px;"></span>-->
         //console.log(new_email);
         //$("#email_re").text(new_email)
         //}
+
+    })
+</script>
+<script>
+
+    //头部搜索
+    $(function () {
+        $(".ss").click(function () {
+            var ss_text = $("input[name='sousuo']").val();
+            if (ss_text){
+                layer.msg(ss_text)
+                setTimeout(function () {
+                                    $(location).attr("href", "{% url 'movie_ss' %}?ss_text=" + ss_text)
+                                }, 3000);
+            }else{
+                layer.msg("搜索框不能为空")
+            }
+
+        })
+        //$("dd[value='欧美电影']").mouseenter(function () {
+        //    $("dd[value='欧美电影']").attr("class", "layui-this")
+        //})
+        //$("dd[value='欧美电影']").hover(function () {
+        //    $("dd[value='欧美电影']").attr("class", "layui-this")
+        //}, function () {
+        //    $("dd[value='欧美电影']").removeClass("layui-this")
+        //});
+        //$("dd[value='国内电影']").hover(function () {
+        //    $("dd[value='国内电影']").attr("class", "layui-this")
+        //}, function () {
+        //    $("dd[value='国内电影']").removeClass("layui-this")
+        //});
+        //$("dd[value='最新影片']").hover(function () {
+         //   $("dd[value='最新影片']").attr("class", "layui-this")
+        //}, function () {
+        //    $("dd[value='最新影片']").removeClass("layui-this")
+        //});
+        //$("dd[value='精品影片']").hover(function () {
+        //    $("dd[value='精品影片']").attr("class", "layui-this")
+        //}, function () {
+        //    $("dd[value='精品影片']").removeClass("layui-this")
+        //});
+
 
     })
 </script>

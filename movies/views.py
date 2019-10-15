@@ -1,13 +1,20 @@
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.core.files.base import ContentFile
+from django.db.models import Q
+
 from django.shortcuts import render, render_to_response, redirect, reverse
 from django.http import JsonResponse, Http404
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from tools.img_path_name import gen_img_name
+from tools.orm2json import object_to_json
 from user.models import Movie
+from user_like.models import LikeRecord
 from error import views as error_views
 import math
+from django.core.cache import cache
 
 
 # Create your views here.
@@ -84,6 +91,16 @@ def movie_index(request):
                 a['mark'] = info.mark
                 a['down'] = info.down
                 a['movie_img'] = info.movie_img
+                a["like_num"] = info.like_num
+                record = False
+                if request.user.is_authenticated:
+                    likerecords = LikeRecord.objects.raw(
+                        f"SELECT * FROM user_like_likerecord where like_movie_id={info.id} and like_user_id={request.user.id} order by id desc limit 1 ")
+                    # likerecords = LikeRecord.objects.filter(like_movie=info.id, like_user=request.user.id)
+                    # record = likerecords[0].like_record
+                    for likerecord in likerecords:
+                        record = likerecord.like_record
+                a["record"] = record
                 result['data'][cate].append(a)
 
         else:
@@ -97,21 +114,42 @@ def movie_list(request):
     page = request.GET.get("page", "1")
     page = int(page)
     if cate_name:
-        movies = Movie.objects.filter(cate_name=cate_name)
-        print(len(movies))
-        print(len(movies) / 16)
+        if cache.get(cate_name):
+            movies = cache.get(cate_name)
+            # print("缓存中获取")
+        else:
+            movies = Movie.objects.filter(cate_name=cate_name)
+            movies = object_to_json(movies)
+            for movie in movies:
+                record = False
+                # print("2222", info.id, request.user.id)
+                if request.user.is_authenticated:
+                    likerecords = LikeRecord.objects.raw(
+                        f"SELECT * FROM user_like_likerecord where like_movie_id={movie['id']} and like_user_id={request.user.id} order by id desc limit 1 ")
+                    # likerecords = LikeRecord.objects.filter(like_movie=info.id, like_user=request.user.id)
+                    # record = likerecords[0].like_record
+                    for likerecord in likerecords:
+                        # print("11111", likerecord.like_record)
+                        record = likerecord.like_record
+                movie["record"] = f"{record}"
+            # cache.set(cate_name, movies, 3600)
+            # print("sql语句查询获取")
+        # print(len(movies))
+        # print(len(movies) / 16)
         all_page = math.ceil(len(movies) / 16)
-        print(all_page)
+        # print(all_page)
         if page > all_page:
             return render(request, "404.html")
     else:
         return render(request, "404.html")
     return render(request, "list.html", {
         "movies": movies[(page - 1) * 16:page * 16],
+        "movies1": mark_safe(movies[(page - 1) * 16:page * 16]),
         "all_page": all_page * 10,
         "page": page,
         "cate_name": cate_name
     })
+
 
 
 def movie_detail(request):
@@ -204,3 +242,88 @@ def rich_upload(request):
         return JsonResponse(result)
     elif request.method == 'GET':
         return render(request, 'upload.html')
+
+
+def movie_ss(request):
+    ss_text = request.GET.get("ss_text")
+    if ss_text:
+        if cache.get(ss_text):
+            movie_infos = cache.get(ss_text)
+        else:
+            # print(ss_text)
+            # movie_infos = Movie.objects.raw(f"""SELECT * FROM user_movie where movie_name like '%{ss_text}%'""")
+            movie_infos = Movie.objects.filter(movie_name__contains=ss_text)
+            # print(movie_infos)
+            cache.set(ss_text, movie_infos, 3600)
+        if movie_infos:
+            page = request.GET.get("page", "1")
+            page = int(page)
+            print(page)
+            all_page = math.ceil(len(movie_infos) / 16)
+            # result = {
+            #             #     "movies": movie_infos[(page - 1) * 16:page * 16],
+            #             #     "all_page": all_page * 10,
+            #             #     "page": page,
+            #             #     "ss_text": ss_text
+            #             # }
+            # print(result)
+            return render(request, "list.html", {
+                "movies": movie_infos[(page - 1) * 16:page * 16],
+                "all_page": all_page * 10,
+                "page": page,
+                "ss_text": ss_text
+            })
+        else:
+            return render(request, "404.html")
+    else:
+        return render(request, "404.html")
+
+
+def movie_type_ss(request):
+    movie_cate = request.GET.get("movie_cate")
+    if movie_cate:
+
+        # movie_infos = Movie.objects.raw(f"""SELECT * FROM user_movie where movie_name like '%{ss_text}%'""")
+        if cache.get(movie_cate):
+            movie_infos = cache.get(movie_cate)
+            # print("缓存中获取")
+        else:
+            if movie_cate == "其他":
+                # movie_infos = Movie.objects.raw(f"""SELECT * FROM user_movie where movie_cate not like '%动作%' and movie_cate not like '%犯罪%' and movie_cate not like '%剧情%' and movie_cate not like '%惊悚%' and movie_cate not like '%喜剧%' and movie_cate not like '%悬疑%' and movie_cate not like '%爱情%'""")
+                # # movie_infos = Movie.objects.exclude(movie_cate__contains=["动作", "犯罪", "剧情", "惊悚", "喜剧", "悬疑", "爱情"])
+                # movie_infos = serializers.serialize("json", movie_infos)
+                movie_infos = Movie.objects.filter(
+                    ~Q(movie_cate__contains="动作") & ~Q(movie_cate__contains="犯罪") & ~Q(movie_cate__contains="剧情") & ~Q(
+                        movie_cate__contains="惊悚") & ~Q(movie_cate__contains="喜剧") & ~Q(movie_cate__contains="悬疑") & ~Q(
+                        movie_cate__contains="爱情"))
+                print(movie_infos)
+            else:
+                movie_infos = Movie.objects.filter(movie_cate__contains=movie_cate)
+                print(movie_infos)
+            cache.set(movie_cate, movie_infos, 3600)
+            # print("sql语句查询获取")
+        if movie_infos:
+            page = request.GET.get("page", "1")
+            page = int(page)
+            # print(page)
+            all_page = math.ceil(len(movie_infos) / 16)
+            # result = {
+            #     "movies": movie_infos[(page - 1) * 16:page * 16],
+            #     "all_page": all_page * 10,
+            #     "page": page,
+            #     "movie_cate": movie_cate
+            # }
+            # print(result)
+            # index_url = reverse("index")
+            # return redirect(index_url)
+            # result["code"] = 001
+        else:
+            return render(request, "404.html")
+    else:
+        return render(request, "404.html")
+    return render(request, "list.html", {
+        "movies": movie_infos[(page - 1) * 16:page * 16],
+        "all_page": all_page * 10,
+        "page": page,
+        "movie_cate": movie_cate
+    })

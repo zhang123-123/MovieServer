@@ -9,6 +9,10 @@
         #LAY-component-grid-list .demo-list .layui-card {
             height: 267px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 {% endblock %}
 {% block index-lbt %}
@@ -23,21 +27,47 @@
                             <img style="object-fit: cover; height: 560px;"
                                  data-original="{% static '' %}{{ movie.movie_img }}">
                         </a>
-                        <a href="{% url 'movie_detail' %}?movie_id={{ movie.id }}">
+                        <a href="">
                             <div class="cmdlist-text">
-                                <p class="info">{{ movie.movie_name }}</p>
-                                <div>
-                                    <span class="look"><i class="layui-icon layui-icon-username"></i>
-                                        <b>{{ movie.look }}查看</b></span>
+                                <a href="{% url 'movie_detail' %}?movie_id={{ movie.id }}"><p
+                                        class="info">{{ movie.movie_name }}</p></a>
 
-                                    <span class="mark"><i class="layui-icon layui-icon-rate"></i>
-                                    <b>{{ movie.mark }}收藏</b>
-                                        </span>
+                                <div class="price">
+                                    <button
+                                            style="margin: 0;padding: 0;border: none;outline: none;background-color: white;"
+                                            class="i_1 a1-{{ movie.id }}" data-id="{{ movie.id }}">
+                                        <i class="layui-icon layui-icon-username"></i>
+                                        <b>{{ movie.look }}查看</b></button>
+                                    <button
+                                            style="margin: 0;padding: 0;border: none;outline: none;background-color: white;"
+                                            class="i_2 a2-{{ movie.id }}" data-id="{{ movie.id }}">
+                                        <i class="layui-icon layui-icon-rate"></i>
+                                        <b>{{ movie.mark }}收藏</b></button>
+
+                                    <button
+                                            style="margin: 0;padding: 0;border: none;outline: none;background-color: white;"
+                                            class="i_3 a3-{{ movie.id }}" data-id="{{ movie.id }}">
+                                        {% if movie.record == "True" %}
+                                        <i
+                                            class="layui-icon "><img src="{% static 'imgs/zan.png' %}"
+                                                                                      style="width:16px;"
+                                                                                      class=""></i>
+                                        {% else %}
+                                            <i
+                                            class="layui-icon layui-icon-praise"><img src="{% static 'imgs/zan.png' %}"
+                                                                                      style="width:16px;"
+                                                                                      class="hidden"></i>
+                                        {% endif %}
+                                        <b><p>{{ movie.like_num }}</p>点赞</b></button>
+
 
                                     <span class="flow down">
+                                        <button
+                                                style="margin: 0;padding: 0;border: none;outline: none;background-color: white;"
+                                                class="i_4 a4-{{ movie.id }}" data-id="{{ movie.id }}">
                                         <i class="layui-icon layui-icon-download-circle"></i>
-                      <b>{{ movie.down }}下载</b>
-                    </span>
+                                            <b>{{ movie.down }}下载</b></button>
+                                    </span>
                                 </div>
                             </div>
                         </a>
@@ -115,17 +145,60 @@
     </script>
 
     <script>
-        $(".look").click(function () {
-            event.preventDefault();
-            alert($(this).val() + "look")
-        });
-    $(".mark").click(function () {
-            event.preventDefault();
-            alert($(this).val() + "mark")
-        });
-    $(".down").click(function () {
-            event.preventDefault();
-            alert($(this).val()+ "down")
+        $(function () {
+            var movies1 = {{ movies1 }}
+                console.log(movies1)
+
+            $.each(movies1, function (index, val) {
+                //console.log(index) //取出索引
+                //console.log(val)  // 取出每个元素
+                var movie_id = val.id
+                //console.log(movie_id)
+                $(".a3-" + val.id).click(function () {
+                    //console.log(val.movie_name)
+                    //var id = $(this).attr("data-id");
+                    //console.log("点赞" + movie_id);
+                    var c3 = ".a3-" + movie_id + " b p";
+                    //console.log(c3)
+                    var is_like = null;
+                    var like_num;
+                    if ($("i", this).hasClass("layui-icon-praise")) {
+                        is_like = true
+                        $("i", this).removeClass("layui-icon-praise")
+                        $("i img", this).removeClass("hidden")
+                    } else {
+                        is_like = false
+                        $("i", this).addClass("layui-icon-praise")
+                        $("i img", this).addClass("hidden")
+                    }
+                    //console.log(is_like)
+                    $.ajax({
+                        url: "{% url 'user-like' %}",
+                        data: {
+                            is_like: is_like,
+                            movie_id: movie_id
+                        },
+                        type: "post",
+                        dataType: "json",
+                        success: function (data, status, xhr) {
+                            console.log(data["message"])
+                            if (status == "success") {
+                                if (data["code"] == "001") {
+                                    layer.msg(data["message"]);
+                                    like_num = data["like_num"]
+                                    $(c3).text(like_num)
+                                } else {
+                                    layer.msg(data["message"]);
+                                }
+                            } else {
+                                layer.msg("请求异常")
+                            }
+                        }
+
+                    })
+                })
+            })
+
         })
     </script>
 {% endblock %}

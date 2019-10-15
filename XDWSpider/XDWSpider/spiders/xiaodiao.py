@@ -34,7 +34,7 @@ class XiaodiaoSpider(scrapy.Spider):
         )
 
     def parse_cates(self, response):
-        cates = response.xpath("//div[@class='contain']/ul/li/a")[:4]
+        cates = response.xpath("//div[@class='contain']/ul/li/a")[3:4]
         for cate in cates:
             cate_name = cate.xpath("text()").get()
             cate_href = cate.xpath("@href").get()

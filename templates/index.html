@@ -3,6 +3,11 @@
 {% block title %}
     <title>首页- layuiAdmin</title>
 {% endblock %}
+{% block my-style %}
+    .hidden{
+        display:none;
+    }
+{% endblock %}
 {% block index-middle %}
     <div class="layui-fluid layadmin-cmdlist-fluid movie-body">
 
@@ -70,27 +75,32 @@
                                 console.log(key, value)
                                 $.each(value, function (index, val) {
                                     console.log(val.img)
-                                    var movie_html = '<div class="layui-col-md3 layui-col-sm4">\n' +
-                                        '                            <div class="cmdlist-container">\n' +
-                                        '                                <a href="{% url 'movie_detail' %}?movie_id='+ val.id +'" >\n' +
-                                        '                                    <img style="object-fit: cover;height: 560px" data-original="{% static '' %}' + val.movie_img + '">\n' +
-                                        '                                </a>\n' +
-                                        '                                <a href="{% url 'movie_detail' %}?movie_id='+ val.id +'">\n' +
-                                        '                                    <div class="cmdlist-text">\n' +
-                                        '                                        <p class="info">' + val.movie_name + '</p>\n' +
-                                        '                                        <div class="price">\n' +
-                                        '                                            <i class="layui-icon layui-icon-username"></i><b>' + val.look + '查看</b>\n' +
-                                        '                                            <i class="layui-icon layui-icon-rate"></i><b>' + val.mark + '收藏</b>\n' +
+                                    var aaa = val.record==true? '': 'layui-icon-praise'
+                                    var bbb = val.record==true? '': 'hidden'
+                                    var movie_html = `<div class="layui-col-md3 layui-col-sm4">
+                                                                    <div class="cmdlist-container">
+                                                                        <a href="{% url 'movie_detail' %}?movie_id=${val.id}" >
+                                                                            <img style="object-fit: cover;height: 560px" data-original="{% static '' %}${val.movie_img}">
+                                                                       </a>
+                                                                        <a href="">
+                                                                            <div class="cmdlist-text">
+                                                                        <a href="{% url 'movie_detail' %}?movie_id=${val.id}">
+                                                                                <p class="info">${val.movie_name}</p>
+                                                                        </a>
+                                                                                <div class="price">
+                                                                                    <button style="margin: 0;padding: 0;border: none;outline: none;background-color: white;" class="i_1" data-id="' + val.id + '"><i class="layui-icon layui-icon-username"></i><b>${val.look}查看</b></button>
+                                                                                    <button style="margin: 0;padding: 0;border: none;outline: none;background-color: white;" class="i_2" data-id="' + val.id + '"><i class="layui-icon layui-icon-rate"></i><b>${val.mark}收藏</b></button>
+                                                                                    <button style="margin: 0;padding: 0;border: none;outline: none;background-color: white;" class="i_3 a3-${val.id}" data-id="${val.id}"><i class="layui-icon ${aaa}"><img src="{% static 'imgs/zan.png' %}" style="width:16px;" class="${bbb}"></i><b><p>${val.like_num}</p>点赞</b></button>
 
-                                        '                                            <span class="flow">\n' +
-                                        '                      <i class="layui-icon layui-icon-download-circle"></i><b>\n' +
-                                        '                      ' + val.down + '下载</b>\n' +
-                                        '                    </span>\n' +
-                                        '                                        </div>\n' +
-                                        '                                    </div>\n' +
-                                        '                                </a>\n' +
-                                        '                            </div>\n' +
-                                        '                        </div>'
+                                                                                    <span class="flow">
+                                                             <button style="margin: 0;padding: 0;border: none;outline: none;background-color: white;" class="i_4" data-id="${val.id}"><i class="layui-icon layui-icon-download-circle i_3"></i><b>
+                                                             ${val.down}下载</b></button>
+                                                            </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                   </div>
+                                                                </div>`
                                     cate_html += movie_html
                                     console.log(val.movie_name)
                                 })
@@ -99,9 +109,63 @@
                                     '            </div>\n' +
                                     '        </fieldset>'
                                 $(".movie-body").append(cate_html)
+
                                 $("img").lazyload({
                                     placeholder: "{% static 'imgs/14e2a32a6d8ff12b83c5fa88bcc61cad.jpg' %}"
                                 })
+                            })
+                            $(".i_1").click(function () {
+                                var id = $(this).attr("data-id");
+                                console.log("查看" + id)
+                            })
+                            $(".i_2").click(function () {
+                                var id = $(this).attr("data-id");
+                                console.log("收藏" + id)
+                            })
+                            $(".i_3").click(function () {
+                                var id = $(this).attr("data-id");
+                                //console.log("点赞" + id);
+                                var c3 = ".a3-" + id + " b p";
+                                //console.log(c3)
+                                var is_like = null;
+                                var like_num;
+                                if($("i", this).hasClass("layui-icon-praise")){
+                                    is_like = true
+                                    $("i", this).removeClass("layui-icon-praise")
+                                    $("i img", this).removeClass("hidden")
+                                }else{
+                                    is_like = false
+                                    $("i", this).addClass("layui-icon-praise")
+                                    $("i img", this).addClass("hidden")
+                                }
+                                //console.log(is_like)
+                                $.ajax({
+                                    url: "{% url 'user-like' %}",
+                                    data: {
+                                        is_like: is_like,
+                                        movie_id: id
+                                    },
+                                    type: "post",
+                                    dataType: "json",
+                                    success: function (data, status, xhr) {
+                                        console.log(data["message"])
+                                        if (status == "success") {
+                                            if (data["code"] == "001") {
+                                                layer.msg(data["message"]);
+                                                like_num = data["like_num"]
+                                                $(c3).text(like_num)
+                                            } else {
+                                                layer.msg(data["message"]);
+                                            }
+                                        } else {
+                                            layer.msg("请求异常")
+                                        }
+                                    }
+                                })
+                            })
+                            $(".i_4").click(function () {
+                                var id = $(this).attr("data-id");
+                                console.log("下载" + id)
                             })
 
                         } else {

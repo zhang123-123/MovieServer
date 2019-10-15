@@ -1,14 +1,17 @@
-from django.http import JsonResponse
+from django.db.models import Q
+from django.http import JsonResponse, QueryDict
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
-from .models import PythonUser, Comment
+from .models import PythonUser, Comment, Huifu
+
 import time
 import json
 from tools.check_data import check_email, check_psw_strong, check_code, check_nickname, check_phone
 from django.contrib.auth.hashers import make_password, check_password
 from tools.img_path_name import gen_img_name
 from tools.time_data import time_
+from tools.orm2json import object_to_json
 from tools.sent_phone_code import ZhenziSmsClient
 import random
 
@@ -201,7 +204,6 @@ def get_code(request):
             result["code"] = "003"
             result["message"] = "已发送，请查看邮箱安全码"
         else:
-
             code = random.randint(100000, 999999)
             # subject = "邮箱安全码"
             content = f"正在进行邮箱验证，本次请求的验证码为：{code}(为了保障您帐号的安全性，请在1小时内完成验证。)"
@@ -300,7 +302,6 @@ def update_info(request):
 @login_required
 @csrf_exempt
 def upload(request):
-
     if request.method == 'POST':
         file_content = ContentFile(request.FILES['file'].read())
         # print(file_content)
@@ -415,7 +416,7 @@ def user_pl(request):
                     result["code"] = "001"
                     result["message"] = "评论成功"
                 else:
-                    result["code"] = "002"
+                    result["code"] = "004"
                     result["message"] = "评论内容不能为空"
             else:
                 result["code"] = "003"
@@ -432,15 +433,21 @@ def user_pl(request):
             "dates":[{
             "username":"",
             "user_img":""
+            "user_hf":[{}]
             }]
         }
         """
         movie_id = request.GET.get("movie_id")
-        movie_comments = Comment.objects.raw("""SELECT * FROM user_comment left join user_pythonuser on user_comment.user_id = user_pythonuser.id where movie_id=%s order by movie_date desc""", (movie_id,))
+        movie_comments = Comment.objects.raw(
+            """SELECT * FROM user_comment left join user_pythonuser on user_comment.user_id = user_pythonuser.id where movie_id=%s order by movie_date """,
+            (movie_id,))
+
         if movie_comments:
             result["code"] = "001"
             result["message"] = "查询成功"
             result["datas"] = []
+            print(movie_comments)
+            i = 1
             for movie_comment in movie_comments:
                 dict1 = {}
                 # print(movie_comment.user_comment_content)
@@ -451,6 +458,9 @@ def user_pl(request):
                 dict1["logn_type"] = movie_comment.login_type
                 dict1["comment_content"] = movie_comment.user_comment_content
                 dict1["comment_id"] = movie_comment.id
+
+                dict1["lou"] = i
+
                 # date = time.time()
                 # timeArray = time.localtime(date)
                 # otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -463,10 +473,132 @@ def user_pl(request):
                 # 转换为时间戳:
                 timeStamp = int(time.mktime(timeStruct))
                 dict1["movie_date"] = time_(time.time() - timeStamp)
+                # hf_s = Huifu.objects.filter(
+                #     Q(movie_id=movie_id) & Q(comment_id=dict1["comment_id"]))
+                print(dict1)
+                hf_s = Huifu.objects.raw(
+                    """SELECT * FROM user_huifu left join user_pythonuser on user_huifu.hf_user_id = user_pythonuser.id where movie_id=%s and comment_id=%s order by hf_date """,
+                    (movie_id, dict1["comment_id"]))
+                print(hf_s)
+                # hf_obj = object_to_json(hf_s)
+                # dict1["hf_info"] = hf_obj
+                dict1["hf_info"] = []
+                j = 1
+                for hf_ in hf_s:
+                    dict2 = {}
+                    dict2["user_name"] = hf_.username
+                    dict2["user_id"] = hf_.hf_user_id
+                    dict2["user_img"] = hf_.img
+                    dict2["logn_type"] = hf_.login_type
+                    dict2["hf_content"] = hf_.hf_content
+                    dict2["hf_id"] = hf_.id
+                    t = str(hf_.hf_date).split(".")[0]
+                    timeStruct = time.strptime(t, "%Y-%m-%d %H:%M:%S")
+                    # 转换为时间戳:
+                    timeStamp = int(time.mktime(timeStruct))
+                    print(dict2)
+                    dict2["movie_date"] = time_(time.time() - timeStamp)
+                    dict2["lou"] = j
+                    dict1["hf_info"].append(dict2)
+                    j += 1
                 result["datas"].append(dict1)
+                i += 1
+
         else:
             result["code"] = "002"
             result["message"] = "查询失败"
     else:
         pass
+    # print(result)
+    # print(json.dumps(result))
     return JsonResponse(result)
+
+
+# 删除评论
+def delete_pl(request):
+    result = {}
+    # DELETE = QueryDict(request.body)
+    # print(DELETE)
+    # id = DELETE.get('id')
+    id = request.GET.get("id")
+    print(id)
+    comments = Comment.objects.filter(id=id)
+    if comments:
+        comments.delete()
+        result["code"] = "001"
+        result["message"] = "删除成功"
+    else:
+        result["code"] = "002"
+        result["message"] = "id不存在"
+
+    return JsonResponse(result)
+
+
+# 回复
+@csrf_exempt
+def add_hf(request):
+    result = {}
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            comment_user_id = request.POST.get("comment_user_id")
+            movie_id = request.POST.get("movie_id")
+            hf_content = request.POST.get("hf_content")
+            comment_id = request.POST.get("comment_id")
+            if request.user.vip >= 2:
+                if hf_content:
+                    hf = Huifu()
+                    hf.comment_id = comment_id
+                    hf.hf_content = hf_content
+                    hf.comment_user_id = comment_user_id
+                    hf.movie_id = movie_id
+                    hf.hf_user_id = request.user.id
+                    hf.save()
+                    result["code"] = "001"
+                    result["message"] = "回复成功"
+                else:
+                    result["code"] = "004"
+                    result["message"] = "回复内容不能为空"
+            else:
+                result["code"] = "003"
+                result["message"] = "等级不够"
+        else:
+            result["code"] = "002"
+            result["message"] = "未登录"
+            result["login_url"] = reverse("login")
+    return JsonResponse(result)
+
+
+# 删除回复
+def delete_hf(request):
+    result = {}
+    # DELETE = QueryDict(request.body)
+    # print(DELETE)
+    # id = DELETE.get('id')
+    id = request.GET.get("id")
+    movie_id = request.GET.get("movie_id")
+    print(id)
+    hfs = Huifu.objects.filter(id=id)
+    if hfs:
+        hfs.delete()
+        result["code"] = "001"
+        result["message"] = "删除成功"
+    else:
+        result["code"] = "002"
+        result["message"] = "id不存在"
+
+    return JsonResponse(result)
+
+
+"""
+def up_vip(request):
+    if request.user.all_price < 10.0:
+        vip = 0
+    elif request.user.all_price < 50.0:
+        vip = 1
+    elif request.user.all_price < 100.0:
+        vip = 2
+    else:
+        vip = 3
+    request.user.vip = vip
+    request.user.save()
+"""

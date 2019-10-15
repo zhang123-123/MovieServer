@@ -57,12 +57,30 @@
                 height: 150px;
             }
         }
-    .movie div{
-        margin-left: 20px;
-    }
-    .movie div span{
-        font-size: 20px;
-    }
+
+        table {
+        {#margin-left: 20px;#}
+        }
+
+        table tr .movie-1 {
+            width: 10%;
+            text-align: center;
+        }
+
+        table tr td {
+            font-size: 20px;
+            /*border: solid 1px red;*/
+            vertical-align: top /*就是垂直顶部*/
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .comment-child {
+            margin-left: 53px;
+            min-height: 50px;
+        }
     </style>
 {% endblock %}
 {% block index-lbt %}
@@ -73,68 +91,218 @@
         <div class="layui-row">
             <div class="layui-col-md8 layui-col-md-offset2">
                 <div class="layui-col-md12">
-                    <div class="pad-btm">
-                        <p class="fontColor"><a href="javascript:;">胡歌</a>为<span>普通照片</span>添加了新的<span>照片</span></p>
-                        <p class="min-font">
-                      <span class="layui-breadcrumb" lay-separator="-" style="visibility: visible;">
-                        <a href="javascript:;" class="layui-icon layui-icon-cellphone"></a><span
-                              lay-separator="">-</span>
-                        <a href="javascript:;">从移动</a><span lay-separator="">-</span>
-                        <a href="javascript:;">11分钟前</a>
-                      </span>
-                        </p>
-                    </div>
-                    <p>历经打磨，@索尼中国
-                        再献新作品—OLED电视A8F完美诞生。很开心一起参加了A8F的“首映礼”！[鼓掌]正如我们演员对舞台的热爱，索尼对科技与艺术的追求才创造出了让人惊喜的作品。作为A1兄弟款，A8F沿袭了黑科技“屏幕发声技术”和高清画质，色彩的出众表现和高端音质，让人在体验的时候如同身临其境。A8F，这次的“视帝”要颁发给你！
-                        索尼官网预售： O网页链接 索尼旗舰店预售：</p>
-                    <img class="h-img" style="width: 80%; object-fit: cover;" src="{% static '' %}{{ movie.movie_img }}">
+                    <h1 style="font-size: 30px">{{ movie.movie_name }}</h1>
+                    {% if movie.movie_img %}
+                        <img class="h-img" style="height: 650px; object-fit: cover;"
+                             src="{% static '' %}{{ movie.movie_img }}"></td>
+                    {% endif %}
                     <!--电影名   译名(trans_name)    片名(movie_title)   年代(movie_age)  产地(movie_price)
             类别(movie_cate)      语言(movie_language)  字幕(movie_subtitle)  上映日期(movie_release_time)
             IMDb评分(movie_imdb)  豆瓣评分(movie_douban)    文件格式(movie_file_format)    视频尺寸(movie_video_size)
             文件大小(movie_file_size)    片长(movie_length)  导演(movie_director)  编剧(movie_screenwriter)
             主演(movie_starring)  标签(movie_label)  简介(简介)-->
-                    <div class="movie">
-                        <div><span class="movie-1">译名</span><span class="movie-2">{{ movie.trans_name }}</span></div>
-                        <div><span class="movie-1">片名</span><span class="movie-2">{{ movie.movie_title }}</span></div>
-                        <div><span class="movie-1" >年代</span><span class="movie-2">{{ movie.movie_age }}</span></div>
-                        <div><span class="movie-1">产地</span><span class="movie-2">{{ movie.movie_price }}</span></div>
-                        <div><span class="movie-1">类别</span><span class="movie-2">{{ movie.movie_cate }}</span></div>
-                        <div><span class="movie-1">语言</span><span class="movie-2">{{ movie.movie_language }}</span></div>
-                        <div><span class="movie-1">字幕</span><span class="movie-2">{{ movie.movie_subtitle }}</span></div>
-                        <div><span class="movie-1">上映日期</span><span class="movie-2">{{ movie.movie_release_time }}</span></div>
-                        <div><span class="movie-1">IMDB评分</span><span class="movie-2">{{ movie.movie_imdb }}</span></div>
-                        <div><span class="movie-1">豆瓣评分</span><span class="movie-2">{{ movie.movie_douban }}</span></div>
-                        <div><span class="movie-1">文件格式</span><span class="movie-2">{{ movie.movie_file_format }}</span></div>
-                        <div><span class="movie-1">视频尺寸</span><span class="movie-2">{{ movie.movie_video_size }}</span></div>
-                        <div><span class="movie-1">文件大小</span><span class="movie-2">{{ movie.movie_file_size }}</span></div>
-                        <div><span class="movie-1">导演</span><span class="movie-2">{{ movie.movie_director }}</span></div>
-                        <div><span class="movie-1">编剧</span><span class="movie-2">{{ movie.movie_screenwriter }}</span></div>
-                        <div><span class="movie-1">主演</span><span class="movie-2">{{ movie.movie_starring }}</span></div>
-                        <div><span class="movie-1">标签</span><span class="movie-2">{{ movie.movie_label }}</span></div>
-                        <div><span class="movie-1">简介</span><span class="movie-2">{{ movie.简介 }}</span></div>
-                    </div>
+                    <table class="layui-col-md12 movie">
+                        <tr style="height: 10px;">
+                            <td colspan="2"></td>
+                        </tr>
+                        {% if movie.trans_name %}
+                            <tr class="">
+                                <td class="movie-1">译&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</td>
+                                <td
+                                        class="movie-2">{{ movie.trans_name }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_title %}
+                            <tr class="">
+                                <td class="movie-1">片&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_title }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        <tr class="">
+                            <td class="movie-1">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;代</td>
+                            <td
+                                    class="movie-2">{{ movie.movie_age }}
+                            </td>
+                        </tr>
 
-
-                </div>
-                <hr>
-                <div class="layui-col-md12">
-
-                    <form class="layui-form" onsubmit="return false">
-                        {% csrf_token %}
-                        <div class="layui-form-item layui-form-text">
-                            <div class="layui-input-block">
-                                <textarea name="desc" placeholder="请输入评论内容" class="layui-textarea" id="demo"></textarea>
-                            </div>
-                        </div>
-                        <div class="layui-form-item" style="overflow: hidden;">
-                            <div class="layui-input-block layui-input-right">
-                                <button class="layui-btn" lay-submit lay-filter="formDemo" id="fb-btn">发表</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content">
-                    <div class="media-body">
+                        <tr style="height: 10px;">
+                            <td colspan="2"></td>
+                        </tr>
+                        {% if movie.movie_place %}
+                            <tr class="">
+                                <td class="movie-1">产&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地</td>
+                                <td
+                                        class="">{{ movie.movie_place }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_cate %}
+                            <tr class="">
+                                <td class="movie-1">类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_cate }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_language %}
+                            <tr class="">
+                                <td class="movie-1">语&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;言</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_language }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_subtitle %}
+                            <tr class="">
+                                <td class="movie-1">字&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;幕</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_subtitle }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_release_time %}
+                            <tr class="">
+                                <td class="movie-1">上映日期</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_release_time }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_imdb %}
+                            <tr class="">
+                                <td class="movie-1">IMDB评分</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_imdb }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_douban %}
+                            <tr class="">
+                                <td class="movie-1">豆瓣评分</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_douban }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_douban %}
+                            <tr class="">
+                                <td class="movie-1">文件格式</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_douban }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_video_size %}
+                            <tr class="">
+                                <td class="movie-1">视频尺寸</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_video_size }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_file_size %}
+                            <tr class="">
+                                <td class="movie-1">文件大小</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_file_size }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_director %}
+                            <tr class="">
+                                <td class="movie-1">导&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;演</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_director }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_screenwriter %}
+                            <tr class="">
+                                <td class="movie-1">编&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;剧</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_screenwriter }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_starring %}
+                            <tr class="">
+                                <td class="movie-1">主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;演</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_starring }}
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_label %}
+                            <tr class="">
+                                <td class="movie-1">标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_label }}
+                                    <br>
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;">
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                        {% if movie.movie_introduction %}
+                            <tr class="">
+                                <td class="movie-1">简&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介</td>
+                                <td
+                                        class="movie-2">{{ movie.movie_introduction }}
+                                    <br>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                    <div class="layui-col-md12 media-body">
 
                         <div class="layui-col-md6">
                             <div class="layui-card">
@@ -161,6 +329,26 @@
                         </div>
 
                     </div>
+                </div>
+                <hr>
+                <div class="layui-col-md12">
+
+                    <form class="layui-form" onsubmit="return false">
+                        {% csrf_token %}
+                        <div class="layui-form-item layui-form-text">
+                            <div class="layui-input-block">
+                                <textarea name="desc" placeholder="请输入评论内容" class="layui-textarea"
+                                          id="demo"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" style="overflow: hidden;">
+                            <div class="layui-input-block layui-input-right">
+                                <button class="layui-btn" lay-submit lay-filter="formDemo" id="fb-btn">发表</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content">
 
                     <!--<button data-method="offset" data-type="auto" class="layui-btn layui-btn-normal" id="btn1">居中弹出</button>-->
                     <div class="add-comment"></div>
@@ -253,6 +441,7 @@
                 if (!pl_content) {
                     layer.msg("评论不能为空")
                 } else {
+
                     $.ajax({
                         url: "{% url 'user_pl' %}",
                         type: "post",
@@ -282,6 +471,8 @@
                 }
 
             })
+
+
             window.onload = function () {
                 var result = GetRequest();
                 //事件内容
@@ -308,10 +499,14 @@
                                     , isAuto: true
                                     , done: function (page, next) { //执行下一页的回调
                                         //模拟数据插入
+                                        var user_name = ""
+                                        user_name = $("#email_re").data("name")
                                         setTimeout(function () {
                                             var lis = [];
+
                                             for (var i = (page - 1) * 5; i < datas.length && i < (page * 5); i++) {
-                                                var cate_html = '<li><div class="media-body">\n' +
+                                                var cate_html0 = ``
+                                                var cate_html1 = '<hr><li><div class="comment media-body">\n' +
                                                     '                    <a href="javascript:;" class="media-left" style="float: left;">\n' +
                                                     '                        <img src="{% static '' %}' + datas[i].user_img + '" height="46px" width="46px">\n' +
                                                     '                    </a>\n' +
@@ -321,20 +516,192 @@
                                                     '              <span class="layui-breadcrumb" lay-separator="-" style="visibility: visible;">\n' +
                                                     '                ' + datas[i].logn_type + '<span lay-separator="">-</span>\n' +
                                                     '                <a href="javascript:;">从移动</a><span lay-separator="">-</span>\n' +
-                                                    '                <a href="javascript:;">' + datas[i].movie_date + '</a>\n' +
+                                                    '                <a href="javascript:;">' + datas[i].movie_date + '</a><span lay-separator="">-</span>\n' +
+                                                    '                <a href="javascript:;">' + datas[i].lou + '楼</a>\n' +
                                                     '              </span>\n' +
                                                     '                        </p>\n' +
                                                     '                    </div>\n' +
-                                                    '                    <p class="message-text">' + datas[i].comment_content + '</p>\n' +
-                                                    '                </div></li>';
+                                                    '                    <p class="message-text">' + datas[i].comment_content + '\n'
+                                                var cate_html2 = `<div class="div100 hidden" style="float:right;margin-top: -40px;"><button style="" type="button" class="layui-btn layui-btn-xs layui-btn-warm btn-huifu" i="${i}" data-id="${datas[i].comment_id}">回复</button>`
+
+                                                var cate_html3 = ""
+                                                if (user_name) {
+                                                    if (datas[i].user_name == user_name) {
+                                                        cate_html3 = `
+                                                                <button style="" type="button" class="layui-btn layui-btn-sm layui-btn-danger pl-btn-delete" data-id="${datas[i].comment_id}">删除</button>
+                                                            `
+                                                    }
+                                                }
+
+                                                cate_html3 = cate_html3 + '</p></div>'
+                                                var hf_infos = datas[i].hf_info
+                                                var cate_html4s = ""
+                                                for (var j = 0; j < hf_infos.length; j++) {
+                                                    var cate_html4 = `<div class="comment-child"><hr><div class="media-body">
+                                                    <a href="javascript:;" class="media-left" style="float: left;">
+                                                        <img src="${{% static '' %}+hf_infos[j].user_img}" height="46px" width="46px">
+                                                    </a>
+                                                    <div class="pad-btm">
+                                                        <p class="fontColor"><a href="javascript:;">${hf_infos[j].user_name}</a></p>
+                                                        <p class="min-font">
+                                              <span class="layui-breadcrumb" lay-separator="-" style="visibility: visible;">
+                                                <a href="javascript:;">${hf_infos[j].logn_type}</a><span lay-separator="">-</span>
+                                                <a href="javascript:;">从移动</a><span lay-separator="">-</span>
+                                                <a href="javascript:;">${hf_infos[j].movie_date}</a><span lay-separator="">-</span>
+                                                <a href="javascript:;">${hf_infos[j].lou}楼</a>
+                                              </span>
+                                                        </p>
+                                                    </div>
+                                                    <p class="message-text">${hf_infos[j].hf_content}<span lay-separator="" style="width:30px">&nbsp;&nbsp;&nbsp;</span>`
+                                                    var html1 = ""
+                                                    if (user_name) {
+                                                        if (hf_infos[j].user_name == user_name) {
+                                                            html1 = `
+                                                                <button style="padding-left: 3px;padding-right: 3px;padding-top: 0px;padding-bottom: 0px;" type="button" class="layui-btn layui-btn-sm layui-btn-danger hf-btn-delete" data-id="${hf_infos[j].hf_id}">删除</button>
+                                                            `
+                                                        }
+                                                    }
+                                                    cate_html4 = cate_html4 + html1 + `</p></div></div>`;
+
+                                                    cate_html4s += cate_html4
+                                                }
+
+
+                                                var cate_html5 = `<div class="huifu-${i}"></div></div></li>`;
+                                                var cate_html = cate_html0 + cate_html1 + cate_html2 + cate_html3 + cate_html4s + cate_html5;
                                                 lis.push(cate_html)
+
+
                                             }
                                             //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
                                             //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
                                             next(lis.join(''), page < pages); //假设总页数为 10
+
+                                            $(".model-list ul li .comment").on("mouseover", $(".div100"), function () {
+
+                                                $(".div100", this).removeClass("hidden");
+                                            }).on("mouseout", $(".div100"), function () {
+
+                                                $(".div100", this).addClass("hidden");
+                                            })
+                                            // 评论信息的删除按钮点击事件
+                                            $(".model-list ul li div .pl-btn-delete").on("click", $(this), function () {
+                                                var id = $(this).attr("data-id");
+                                                console.log("我被点击xcvxcvxv" + id)
+                                                $.ajax({
+                                                    url: {% url 'delete_pl' %},
+                                                    type: "get",
+                                                    data: {
+                                                        id: id
+                                                    },
+                                                    dataType: "json",
+                                                    success: function (data, status, xhr) {
+                                                        if (status == "success") {
+                                                            layer.msg(data["message"])
+                                                            setTimeout(function () {
+                                                                $(location).attr("href", window.location.href)
+                                                            }, 2000);
+                                                        }
+                                                    },
+
+                                                })
+                                            })
+                                            // 回复信息的删除按钮点击事件
+                                            $(".model-list ul li div .hf-btn-delete").on("click", $(this), function () {
+                                                var id = $(this).attr("data-id");
+                                                console.log("我被点击" + id)
+                                                $.ajax({
+                                                    url: {% url 'delete_hf' %},
+                                                    type: "get",
+                                                    data: {
+                                                        id: id
+                                                    },
+                                                    dataType: "json",
+                                                    success: function (data, status, xhr) {
+                                                        if (status == "success") {
+                                                            layer.msg(data["message"])
+                                                            setTimeout(function () {
+                                                                $(location).attr("href", window.location.href)
+                                                            }, 2000);
+                                                        }
+                                                    },
+
+                                                })
+                                            })
+                                            $(".model-list ul li div .btn-huifu").on("click", $(this), function () {
+                                                var id = $(this).attr("data-id");
+                                                var i = $(this).attr("i")
+                                                var comment_user_id = datas[i].user_id
+                                                var movie_id = result["movie_id"]
+                                                var comment_id = datas[i].comment_id
+                                                //console.log("我被点击" + id + "adsad" + i)
+
+                                                var huifu_html = `<div class="replycontainer">
+                                                <form class="layui-form" action="" onsubmit="return false">
+<input type="hidden" name="pId" value="0"><div class="layui-form-item"><textarea name="replyContent" lay-verify="replyContent"
+                                               placeholder="回复【${datas[i].user_name}&nbsp;&nbsp;】" class="layui-textarea"
+                                               style="min-height:80px;" id="demo${i}"></textarea></div>
+
+                                                    <div class="layui-form-item">
+
+                                                    </div>
+                                                </form>
+                                            </div>`
+                                                var div = $(huifu_html)
+                                                $('<button class="layui-btn layui-btn-xs hf-btn comment-child" lay-submit="" lay-filter="replySubmit">提交</button>').appendTo(div).addClass("hidden").click(function () {
+                                                    //console.log("1111111111")
+                                                    var hf_content = layui.layedit.getContent(index1)
+                                                    //console.log(hf_content)
+                                                    $.ajax({
+                                                        url: "{% url 'add_hf' %}",
+                                                        type: "post",
+                                                        dataType: "json",
+                                                        data: {
+                                                            comment_user_id: comment_user_id,
+                                                            movie_id: movie_id,
+                                                            hf_content: hf_content,
+                                                            comment_id: comment_id
+                                                        },
+                                                        success: function (data, status, xhr) {
+                                                            if (status == "success") {
+                                                                if (data["code"] == "001") {
+                                                                    layer.msg(data["message"])
+                                                                    setTimeout(function () {
+                                                                        $(location).attr("href", window.location.href)
+                                                                    }, 2000);
+                                                                } else {
+                                                                    layer.msg(data["message"])
+                                                                }
+                                                            }
+
+                                                        }
+                                                    })
+
+                                                })
+                                                div.hover(function () {
+                                                    $("button", this).removeClass("hidden");
+                                                }, function () {
+                                                    $("button", this).addClass("hidden");
+                                                })
+                                                $(".model-list ul li .huifu-" + i).append(div)
+                                                layui.use('layedit', function () {
+                                                    var layedit = layui.layedit;
+                                                    layedit.set({
+                                                        uploadImage: {
+                                                            url: '{% url 'rich_upload' %}' //接口url
+                                                            , type: 'post' //默认post
+                                                        }
+                                                    });
+                                                    index1 = layedit.build('demo' + i); //建立编辑器
+
+                                                });
+                                            })
+
+
                                         }, 500);
                                     }
                                 });
+
 
                             });
                         }
@@ -348,6 +715,7 @@
         })
 
     </script>
+
     <script>
         layui.use('layedit', function () {
             var layedit = layui.layedit;
@@ -416,3 +784,26 @@
     </script>
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+<div class="replycontainer">
+    <form class="layui-form" action=""><input type="hidden" name="pId" value="0">
+        <div class="layui-form-item"><textarea name="replyContent" lay-verify="replyContent"
+                                               placeholder="回复【书山压力大 &nbsp;&nbsp;】" class="layui-textarea"
+                                               style="min-height:80px;"></textarea></div>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-btn-xs" lay-submit="" lay-filter="replySubmit">提交</button>
+        </div>
+    </form>
+</div>
+
+<!--function a(e) {
+
+                                            }-->

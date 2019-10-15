@@ -1,7 +1,5 @@
-# -*- coding:utf-8 -*-
+﻿# -*- coding:utf-8 -*-
 import re
-from user.models import PythonUser
-from django.contrib.auth.hashers import check_password
 
 def check_phone(phone):
     phone_pattern = re.compile("^1[345678]\d{9}$")
@@ -59,11 +57,5 @@ def check_nickname(name):
     return False
 
 
-# 检测邮箱与密码是否对应
-def check_pwd(email, pwd):
-    users = PythonUser.objects.filter(username=email)
-    for user in users:
-        print(user.password)
-        a = check_password(user.password, "")
-        print(a)
+
 
