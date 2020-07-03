@@ -22,6 +22,9 @@ from error import views as error_views
 from vip import views as vip_views
 from website import views as site_views
 from user_like import views as user_like_views
+from movies.views import MySearchIndex
+
+from haystack.views import SearchView
 
 
 urlpatterns = [
@@ -50,7 +53,7 @@ urlpatterns = [
     path("movie_index/", movie_views.movie_index, name="movie_index"),
     path("movie_list/", movie_views.movie_list, name="movie_list"),
     path("rich_upload/", movie_views.rich_upload, name="rich_upload"),
-    path("movie_ss/", movie_views.movie_ss, name="movie_ss"),
+    path("movie_ss/", MySearchIndex(), name="movie_ss"),
     path("movie_type_ss/", movie_views.movie_type_ss, name="movie_type_ss"),
 
     path("page_not_found/", error_views.page_not_found, name="page_not_found"),

@@ -26,7 +26,7 @@ SECRET_KEY = ')e5*smkqre2_s6w%pc#bsum+$b-k82t78leth$91&&ho#r*cu='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["115.29.150.206", "0.0.0.0:8001", "127.0.0.1"]
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # haystack要放在应用的上面
+    'haystack',
     'user',
     "movies",
     "error",
@@ -45,6 +47,17 @@ INSTALLED_APPS = [
     "user_like",
     "vip",
 ]
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+    },
+}
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# haystack自动分页默认每页显示20个  可以根据自己的需求设置显示个数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 16
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -144,8 +157,8 @@ LOGIN_URL = "/login/"
 # 邮件服务器配置
 EMAIL_HOST = 'smtp.163.com'  # 如果是 163 改成 smtp.163.com
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'zhang864071694@163.com'  # 在这里填入您的QQ邮箱账号
-EMAIL_HOST_PASSWORD = 'zhangzenan520'  # 请在这里填上您自己邮箱的授权码
+EMAIL_HOST_USER = 'zyh1741290057@163.com'  # 在这里填入您的QQ邮箱账号
+EMAIL_HOST_PASSWORD = 'zhangyonghao1997'  # 请在这里填上您自己邮箱的授权码
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_USE_SSL = True
 
@@ -153,7 +166,7 @@ EMAIL_USE_SSL = True
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",  # 这里设定了本机的redis数据
+        "LOCATION": "redis://:@127.0.0.1:6379",  # 这里设定了本机的redis数据
         # "LOCATION": "redis://:passwordpassword@47.193.146.xxx:6379/0", # 如果redis设置密码的话，需要以这种格式host前面是密码
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",

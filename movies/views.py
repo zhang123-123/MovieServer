@@ -15,7 +15,7 @@ from user_like.models import LikeRecord
 from error import views as error_views
 import math
 from django.core.cache import cache
-
+from haystack.views import SearchView
 
 # Create your views here.
 
@@ -327,3 +327,39 @@ def movie_type_ss(request):
         "page": page,
         "movie_cate": movie_cate
     })
+
+
+
+#搜索引擎 全站搜索
+class MySearchIndex(SearchView):
+
+    template = 'list.html'
+    #我们通过重写extra_context 来定义我们自己的变量，
+    #通过看源码，extra_context 默认返回的是空，然后再get_context方法里面，把extra_context
+    #返回的内容加到我们self.context字典里
+    def extra_context(self):
+        context = super(MySearchIndex, self).extra_context()
+        search_song = Movie.objects.select_related('movie_name').all()[:self.results_per_page]
+        context['search_song']= search_song
+        return context
+
+    def create_response(self):
+        ss_text = self.request.GET.get("ss_text")
+        page = self.request.GET.get("page", "1")
+        print(ss_text, page)
+        if not ss_text:
+            print(self.request.GET.get("ss_text"))
+            movie_infos =Movie.objects.filter(movie_name=ss_text)[:self.results_per_page]
+            all_page = math.ceil(len(movie_infos) / 16)
+            # song_info = Song.objects.all()
+            # paginator = Paginator(song_info, settings.HAYSTACK_SEARCH_RESULTS_PER_PAGE)
+            return render(self.request, "list.html", {
+                "movies": movie_infos[(page - 1) * 16:page * 16],
+                "all_page": all_page * 10,
+                "page": page,
+                "ss_text": ss_text
+            })
+
+
+
+
